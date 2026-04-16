@@ -19,11 +19,11 @@ from PIL import Image
 from torchvision import transforms
 
 from ..models.utils.camera_utils import vector_to_camera_matrices
-from ..models.utils.geometry import depth_to_world_coords_points
 from .save_utils import (
     save_depth_png, save_depth_npy, save_normal_png,
-    save_gs_ply, save_points_ply, save_camera_params,
+    save_camera_params,
 )
+from .streaming_save import save_gaussian_splats_artifact, save_points_artifact
 from .video_utils import video_to_image_frames, video_to_image_frames_new
 from .visual_util import segment_sky, download_file_from_url
 from .geometry import depth_edge, normals_edge
@@ -573,56 +573,6 @@ def _voxel_prune_gaussians(means, scales, quats, colors, opacities, weights, vox
     return _wavg(means), _wavg(scales), m_quats, _wavg(colors), m_opa
 
 
-def _compress_points_voxel_then_sample(pts_np, cols_np, max_points=2_000_000, voxel_size=0.005):
-    """Compress point cloud: voxel merge then uniform random sampling."""
-    n_in = int(pts_np.shape[0])
-    if n_in == 0:
-        return pts_np, cols_np
-
-    if voxel_size > 0:
-        voxel = np.floor(pts_np / voxel_size).astype(np.int64)
-        voxel -= voxel.min(axis=0, keepdims=True)
-        _, inv = np.unique(voxel, axis=0, return_inverse=True)
-        k = int(inv.max()) + 1
-        if k < n_in:
-            counts = np.maximum(np.bincount(inv, minlength=k).astype(np.float32), 1.0)
-            pts_np = np.stack([np.bincount(inv, weights=pts_np[:, d], minlength=k)
-                               for d in range(3)], axis=1).astype(np.float32) / counts[:, None]
-            cols_np = np.clip(np.round(
-                np.stack([np.bincount(inv, weights=cols_np[:, d].astype(np.float32), minlength=k)
-                          for d in range(3)], axis=1) / counts[:, None]
-            ), 0, 255).astype(np.uint8)
-
-    if max_points > 0 and pts_np.shape[0] > max_points:
-        idx = np.random.default_rng(42).choice(pts_np.shape[0], size=max_points, replace=False)
-        pts_np, cols_np = pts_np[idx], cols_np[idx]
-    return pts_np, cols_np
-
-
-def _compute_points_from_depth(depth_pred, imgs, extrinsics, intrinsics, S, H, W, filter_mask=None):
-    """Derive 3D point cloud from depth + camera outputs."""
-    depth_pred, extrinsics, intrinsics = depth_pred.float(), extrinsics.float(), intrinsics.float()
-    points_list, colors_list = [], []
-    for i in range(S):
-        d = depth_pred[0, i, :, :, 0]
-        w2c = torch.cat([extrinsics[i][:3, :4],
-                         torch.tensor([[0, 0, 0, 1]], device=extrinsics.device)], dim=0)
-        c2w = torch.linalg.inv(w2c)[:3, :4]
-        pts_i, _, mask = depth_to_world_coords_points(d[None], c2w[None], intrinsics[i][None])
-        img_colors = (imgs[0, i].permute(1, 2, 0) * 255).to(torch.uint8)
-        valid = mask[0]
-        if filter_mask is not None:
-            valid = valid & torch.from_numpy(filter_mask[i]).to(valid.device)
-        if valid.sum().item() > 0:
-            points_list.append(pts_i[0][valid])
-            colors_list.append(img_colors[valid])
-
-    if not points_list:
-        return np.empty((0, 3), dtype=np.float32), np.empty((0, 3), dtype=np.uint8)
-    return (torch.cat(points_list).detach().cpu().float().numpy(),
-            torch.cat(colors_list).detach().cpu().to(torch.uint8).numpy())
-
-
 def _save_colmap_lightweight(extrinsics, intrinsics, outdir, final_w, final_h, S, image_names):
     """Save lightweight COLMAP reconstruction (cameras + images only)."""
     import pycolmap
@@ -655,7 +605,9 @@ def save_results(predictions, imgs, img_paths, outdir,
                  filter_mask=None, gs_filter_mask=None, sky_mask=None,
                  compress_pts=True, compress_pts_max_points=2_000_000,
                  compress_pts_voxel_size=0.002,
-                 compress_gs_max_points=5_000_000):
+                 compress_gs_max_points=5_000_000,
+                 output_memory_budget_gb=4.0,
+                 save_chunk_frames=None):
     """Save all results with parallel I/O. Returns timing dict."""
     timings = {}
     outdir = Path(outdir)
@@ -703,33 +655,18 @@ def save_results(predictions, imgs, img_paths, outdir,
         futures["save_sky_mask"] = executor.submit(_timed_call, _save_sky_mask_parallel, sky_mask, sm_dir, S)
 
     if save_gs and "splats" in predictions:
-        sp = predictions["splats"]
-        means = sp["means"][0].reshape(-1, 3).detach().cpu()
-        scales = sp["scales"][0].reshape(-1, 3).detach().cpu()
-        quats = sp["quats"][0].reshape(-1, 4).detach().cpu()
-        colors = (sp["sh"][0] if "sh" in sp else sp["colors"][0]).reshape(-1, 3).detach().cpu()
-        opacities = sp["opacities"][0].reshape(-1).detach().cpu()
-        weights = sp["weights"][0].reshape(-1).detach().cpu() if "weights" in sp else torch.ones_like(opacities)
-
-        keep = None
-        if gs_filter_mask is not None:
-            keep = torch.from_numpy(gs_filter_mask.reshape(-1)).bool()
-        elif filter_mask is not None:
-            keep = torch.from_numpy(filter_mask.reshape(-1)).bool()
-        if keep is not None:
-            means, scales, quats = means[keep], scales[keep], quats[keep]
-            colors, opacities, weights = colors[keep], opacities[keep], weights[keep]
-
-        means, scales, quats, colors, opacities = _voxel_prune_gaussians(
-            means, scales, quats, colors, opacities, weights)
-        if compress_gs_max_points > 0 and means.shape[0] > compress_gs_max_points:
-            idx = torch.from_numpy(
-                np.random.default_rng(42).choice(means.shape[0], size=compress_gs_max_points, replace=False)
-            ).long()
-            means, scales, quats, colors, opacities = means[idx], scales[idx], quats[idx], colors[idx], opacities[idx]
-
-        futures["save_gs_ply"] = executor.submit(
-            _timed_call, save_gs_ply, outdir / "gaussians.ply", means, scales, quats, colors, opacities)
+        gs_timings = save_gaussian_splats_artifact(
+            outdir / "gaussians.ply",
+            predictions["splats"],
+            filter_mask=filter_mask,
+            gs_filter_mask=gs_filter_mask,
+            max_points=compress_gs_max_points,
+            memory_budget_gb=output_memory_budget_gb,
+            save_chunk_frames=save_chunk_frames,
+            image_shape=(S, H, W),
+        )
+        if log_time:
+            timings.update(gs_timings)
 
     if save_camera and "camera_poses" in predictions and "camera_intrs" in predictions:
         cam_p = predictions["camera_poses"][0].detach().cpu().float().numpy()
@@ -737,12 +674,19 @@ def save_results(predictions, imgs, img_paths, outdir,
         futures["save_camera"] = executor.submit(_timed_call, save_camera_params, cam_p, cam_i, str(outdir))
 
     if save_points and "depth" in predictions and "camera_params" in predictions:
-        e3x4, intr = vector_to_camera_matrices(predictions["camera_params"], image_hw=(H, W))
-        pts_np, cols_np = _compute_points_from_depth(
-            predictions["depth"], imgs, e3x4[0], intr[0], S, H, W, filter_mask=filter_mask)
-        futures["save_points"] = executor.submit(
-            _timed_call, _save_points_artifacts, outdir / "points.ply", pts_np, cols_np,
-            compress_pts, compress_pts_max_points, compress_pts_voxel_size)
+        point_timings = save_points_artifact(
+            outdir / "points.ply",
+            predictions,
+            imgs,
+            filter_mask=filter_mask,
+            compress=compress_pts,
+            max_points=compress_pts_max_points,
+            voxel_size=compress_pts_voxel_size,
+            memory_budget_gb=output_memory_budget_gb,
+            save_chunk_frames=save_chunk_frames,
+        )
+        if log_time:
+            timings.update(point_timings)
 
     if save_colmap and "camera_params" in predictions:
         e3x4, intr = vector_to_camera_matrices(predictions["camera_params"], image_hw=(new_h, new_w))
@@ -759,18 +703,6 @@ def save_results(predictions, imgs, img_paths, outdir,
                 timings.update(result)
 
     executor.shutdown(wait=False)
-    return timings
-
-
-def _save_points_artifacts(path, pts_np, cols_np,
-                           compress=False, max_points=2_000_000,
-                           voxel_size=0.005):
-    timings = {}
-    if compress:
-        t0 = time.perf_counter()
-        pts_np, cols_np = _compress_points_voxel_then_sample(pts_np, cols_np, max_points, voxel_size)
-        timings["compress_points"] = time.perf_counter() - t0
-    save_points_ply(path, pts_np, cols_np)
     return timings
 
 

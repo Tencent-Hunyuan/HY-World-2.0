@@ -48,15 +48,10 @@ from .hyworldmirror.utils.inference_utils import (
     compute_adaptive_target_size,
     compute_sky_mask,
     compute_filter_mask,
-    _voxel_prune_gaussians,
 )
+from .hyworldmirror.utils.streaming_save import save_gaussian_splats_artifact
 from .hyworldmirror.utils.visual_util import convert_predictions_to_glb_scene
-from .hyworldmirror.utils.save_utils import (
-    save_camera_params,
-    save_gs_ply,
-    convert_gs_to_ply,
-    process_ply_to_splat,
-)
+from .hyworldmirror.utils.save_utils import save_camera_params
 from .hyworldmirror.models.utils.geometry import depth_to_world_coords_points
 
 # ---------------------------------------------------------------------------
@@ -491,40 +486,16 @@ def gradio_demo(
 
         gs_file = None
         if "splats" in predictions:
-            sp = predictions["splats"]
-            means = sp["means"][0].reshape(-1, 3).detach().cpu()
-            scales = sp["scales"][0].reshape(-1, 3).detach().cpu()
-            quats = sp["quats"][0].reshape(-1, 4).detach().cpu()
-            colors = (sp.get("sh", sp.get("colors"))[0]).reshape(-1, 3).detach().cpu()
-            opacities = sp["opacities"][0].reshape(-1).detach().cpu()
-            weights = (sp["weights"][0].reshape(-1).detach().cpu()
-                       if "weights" in sp else torch.ones_like(opacities))
-
-            keep = None
-            if predictions.get("gs_filter_mask") is not None:
-                keep = torch.from_numpy(predictions["gs_filter_mask"].reshape(-1)).bool()
-            elif predictions.get("final_mask") is not None:
-                keep = torch.from_numpy(predictions["final_mask"].reshape(-1)).bool()
-            if keep is not None:
-                means, scales, quats = means[keep], scales[keep], quats[keep]
-                colors, opacities, weights = colors[keep], opacities[keep], weights[keep]
-
-            means, scales, quats, colors, opacities = _voxel_prune_gaussians(
-                means, scales, quats, colors, opacities, weights)
-
-            compress_gs_max_points = 5_000_000
-            if compress_gs_max_points > 0 and means.shape[0] > compress_gs_max_points:
-                n_before = means.shape[0]
-                idx = torch.from_numpy(
-                    np.random.default_rng(42).choice(
-                        n_before, size=compress_gs_max_points, replace=False)
-                ).long()
-                means, scales, quats = means[idx], scales[idx], quats[idx]
-                colors, opacities = colors[idx], opacities[idx]
-                print(f"[Save] Downsample gaussians: {n_before} -> {compress_gs_max_points}")
-
             gs_file = os.path.join(target_dir, "gaussians.ply")
-            save_gs_ply(gs_file, means, scales, quats, colors, opacities)
+            save_gaussian_splats_artifact(
+                Path(gs_file),
+                predictions["splats"],
+                filter_mask=predictions.get("final_mask"),
+                gs_filter_mask=predictions.get("gs_filter_mask"),
+                max_points=5_000_000,
+                image_shape=predictions["world_points"].shape[:3],
+                memory_budget_gb=4.0,
+            )
             print(f"[Save] gaussians.ply ({os.path.getsize(gs_file)} bytes)")
 
         depth_vis = update_depth_view(processed_data, 0)

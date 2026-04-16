@@ -244,6 +244,7 @@ torchrun --nproc_per_node=2 -m hyworld2.worldrecon.pipeline \
 ```
 
 > **Important:** In multi-GPU mode, the number of input images must be **>= the number of GPUs**. For example, with `--nproc_per_node=8`, provide at least 8 images.
+> Large 3DGS and point-cloud artifacts are saved through a chunked output path. Use `--output_memory_budget_gb` or `--save_chunk_frames` to tighten rank-0 host-memory usage during serialization.
 
 ### Gradio App — WorldMirror 2.0
 

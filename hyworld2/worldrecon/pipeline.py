@@ -419,6 +419,8 @@ class WorldMirrorPipeline:
         compress_pts_voxel_size: float = 0.002,
         max_resolution: int = 1920,
         compress_gs_max_points: int = 5_000_000,
+        output_memory_budget_gb: float = 4.0,
+        save_chunk_frames: int = None,
         # Prior
         prior_cam_path: str = None,
         prior_depth_path: str = None,
@@ -537,6 +539,8 @@ class WorldMirrorPipeline:
                 compress_pts_max_points=compress_pts_max_points,
                 compress_pts_voxel_size=compress_pts_voxel_size,
                 compress_gs_max_points=compress_gs_max_points,
+                output_memory_budget_gb=output_memory_budget_gb,
+                save_chunk_frames=save_chunk_frames,
             )
             if log_time:
                 timings.update(save_timings or {})
@@ -736,6 +740,10 @@ def main():
     parser.add_argument("--compress_pts_voxel_size", type=float, default=0.002)
     parser.add_argument("--max_resolution", type=int, default=1920)
     parser.add_argument("--compress_gs_max_points", type=int, default=5_000_000)
+    parser.add_argument("--output_memory_budget_gb", type=float, default=4.0,
+                        help="Host-memory budget for chunked output serialization")
+    parser.add_argument("--save_chunk_frames", type=int, default=None,
+                        help="Optional fixed number of frames per output chunk")
     parser.add_argument("--prior_cam_path", type=str, default=None)
     parser.add_argument("--prior_depth_path", type=str, default=None)
     parser.add_argument("--disable_heads", type=str, nargs="*", default=None,
@@ -787,6 +795,8 @@ def main():
         compress_pts_voxel_size=args.compress_pts_voxel_size,
         max_resolution=args.max_resolution,
         compress_gs_max_points=args.compress_gs_max_points,
+        output_memory_budget_gb=args.output_memory_budget_gb,
+        save_chunk_frames=args.save_chunk_frames,
         prior_cam_path=args.prior_cam_path,
         prior_depth_path=args.prior_depth_path,
         save_rendered=args.save_rendered,

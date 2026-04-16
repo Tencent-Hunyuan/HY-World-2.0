@@ -135,6 +135,8 @@ Returns the output directory path (`str`), or `None` if the input was skipped.
 | `compress_pts_voxel_size` | `float` | `0.002` | Voxel size for point cloud merging |
 | `max_resolution` | `int` | `1920` | Maximum resolution for saved output images |
 | `compress_gs_max_points` | `int` | `5,000,000` | Maximum number of Gaussians after voxel pruning |
+| `output_memory_budget_gb` | `float` | `4.0` | Approximate host-memory budget for chunked output serialization |
+| `save_chunk_frames` | `int` | `None` | Optional fixed number of frames per output chunk; overrides automatic chunk sizing |
 
 **Prior Parameters:**
 
@@ -201,6 +203,8 @@ python -m hyworld2.worldrecon.pipeline \
 | `--enable_bf16` | Enable bfloat16 mixed precision |
 | `--fsdp_cpu_offload` | Offload FSDP params to CPU |
 | `--disable_heads` | Space-separated list of heads to disable (e.g. `--disable_heads camera normal`) |
+| `--output_memory_budget_gb` | Host-memory budget used to size output serialization chunks |
+| `--save_chunk_frames` | Fixed frame count per save chunk, useful for deterministic memory envelopes |
 | `--no_interactive` | Exit after first inference (skip interactive prompt loop) |
 
 ---
@@ -366,7 +370,7 @@ pipeline('path/to/images')
 2. The model is loaded on rank 0 and broadcast via `sync_module_states=True`.
 3. FSDP shards parameters across the SP process group.
 4. DPT prediction heads split frames across ranks and `AllGather` results.
-5. Post-processing (mask computation, saving) runs on rank 0 only.
+5. Post-processing (mask computation, saving) runs on rank 0 only. Large 3DGS and point-cloud outputs are serialized in chunks so rank 0 does not need a full CPU copy of every per-pixel Gaussian or point at once.
 
 ---
 ### Advanced Options
@@ -390,6 +394,22 @@ The pipeline supports three types of output filtering to improve point cloud and
 3. **Confidence mask** (`apply_confidence_mask=False`): Removes the bottom N% of points by prediction confidence.
 These masks are applied independently to both the `points.ply` (depth-based) and `gaussians.ply` (GS-based) outputs. The GS output uses its own depth predictions for edge detection when available.
 #### Point Cloud Compression
+WorldMirror writes large point-cloud and 3DGS artifacts through a chunked output path. By default, `output_memory_budget_gb=4.0` is used to size transient CPU buffers while preserving the final compression settings. For tighter hosts, lower the budget:
+
+```bash
+python -m hyworld2.worldrecon.pipeline \
+    --input_path path/to/images \
+    --output_memory_budget_gb 2.0
+```
+
+For repeatable chunk boundaries across machines, set `--save_chunk_frames`:
+
+```bash
+python -m hyworld2.worldrecon.pipeline \
+    --input_path path/to/images \
+    --save_chunk_frames 2
+```
+
 When `compress_pts=True` (default), the depth-derived point cloud undergoes:
 1. **Voxel merging**: Points within each voxel (size controlled by `compress_pts_voxel_size`) are merged via weighted averaging.
 2. **Random subsampling**: If the result exceeds `compress_pts_max_points`, points are uniformly subsampled.
