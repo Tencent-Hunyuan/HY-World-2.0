@@ -449,8 +449,30 @@ def compute_filter_mask(predictions, imgs, img_paths, H, W, S,
                         apply_confidence_mask=False, apply_edge_mask=False,
                         apply_sky_mask=False, confidence_percentile=10.0,
                         edge_normal_threshold=5.0, edge_depth_threshold=0.03,
-                        sky_mask=None, use_gs_depth=False):
+                        sky_mask=None, use_gs_depth=False,
+                        # NegenWM-JEPA-v2 : NER optionnel (use_ner=False — zéro breaking change)
+                        use_ner=False, ner_tau=0.35,
+                        ner_lambda_sky=0.30, ner_lambda_edge=0.30):
     """Compute unified filter mask. Returns (filter_mask, gs_filter_mask) tuple."""
+    # ── NegenWM-JEPA-v2 : branche NER différentielle ──────────────────────────
+    if use_ner and "ner_score" in predictions:
+        from .ner_utils import compute_ner_filter_mask, ner_scores_to_numpy
+        ner_np = ner_scores_to_numpy(predictions["ner_score"])  # [S, H, W]
+        sky_np = None
+        edge_np = None
+        if apply_sky_mask:
+            if sky_mask is None:
+                sky_mask = compute_sky_mask(img_paths, H, W, S, processed_aspect_ratio=W / H)
+            sky_np = sky_mask
+        # Note : edge_np non exposé ici (intégration future via edge_mask prior)
+        ner_mask = compute_ner_filter_mask(
+            ner_np, tau=ner_tau,
+            sky_mask=sky_np, lambda_sky=ner_lambda_sky,
+            edge_mask=edge_np, lambda_edge=ner_lambda_edge,
+        )
+        print(f"[NER] Filter: kept {ner_mask.sum()}/{ner_mask.size} points (tau={ner_tau:.2f})")
+        return ner_mask, None
+    # ── Branche heuristique originale (inchangée) ─────────────────────────────
     if not (apply_confidence_mask or apply_edge_mask or apply_sky_mask):
         return np.ones((S, H, W), dtype=bool), None
 

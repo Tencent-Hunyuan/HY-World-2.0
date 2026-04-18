@@ -52,6 +52,11 @@ class WorldMirror(nn.Module, PyTorchModelHubMixin):
         rope_jitter_coords=None,
         rope_rescale_coords=None,
         sp_size=1,
+        # NegenWM-JEPA-v2 NER scoring head (enable_ner=False — zéro breaking change)
+        enable_ner=False,
+        ner_kappa: float = 1.0,
+        ner_lambda: float = 0.5,
+        ner_tau: float = 0.35,
         # Legacy parameters (ignored, kept for checkpoint compatibility)
         set_sky_region_to_maxdepth=False,
         disable_gs_depth=False,
@@ -118,6 +123,10 @@ class WorldMirror(nn.Module, PyTorchModelHubMixin):
         self.enable_norm = enable_norm
         self.enable_gs = enable_gs
         self.enable_bf16 = enable_bf16
+        self.enable_ner = enable_ner
+        self.ner_kappa = ner_kappa
+        self.ner_lambda = ner_lambda
+        self.ner_tau = ner_tau
         self.patch_embed = patch_embed
         self.sampling = sampling_strategy
         self.dpt_checkpoint = dpt_gradient_checkpoint
@@ -179,6 +188,10 @@ class WorldMirror(nn.Module, PyTorchModelHubMixin):
             "dpt_gradient_checkpoint": self.dpt_checkpoint,
             "condition_strategy": self.cond_methods,
             "model_size": self.model_size,
+            "enable_ner": self.enable_ner,
+            "ner_kappa": self.ner_kappa,
+            "ner_lambda": self.ner_lambda,
+            "ner_tau": self.ner_tau,
         }
 
     def _init_heads(self, dim, patch_size, gs_dim):
@@ -230,6 +243,18 @@ class WorldMirror(nn.Module, PyTorchModelHubMixin):
                 gradient_checkpoint=self.dpt_checkpoint,
             )
             self.gs_renderer = GaussianSplatRenderer(
+        # NegenWM-JEPA-v2 : NERHead optionnel (enable_ner=False — zéro impact)
+        if self.enable_ner:
+            from ..heads.ner_head import NERHead
+            self.ner_head = NERHead(
+                dim_in=2 * dim,
+                patch_size=patch_size,
+                features=256,
+                kappa=self.ner_kappa,
+                lam=self.ner_lambda,
+                tau=self.ner_tau,
+                kappa_learnable=True,
+            )
                 feature_dim=gs_dim,
                 sh_degree=0,
                 enable_prune=True,
@@ -250,6 +275,8 @@ class WorldMirror(nn.Module, PyTorchModelHubMixin):
         if self.enable_gs:
             self.gs_head = self.gs_head.to(*args, **kwargs)
             self.gs_renderer = self.gs_renderer.to(*args, **kwargs)
+        if self.enable_ner:
+            self.ner_head = self.ner_head.to(*args, **kwargs)
         return self
 
     def forward(
@@ -587,6 +614,17 @@ class WorldMirror(nn.Module, PyTorchModelHubMixin):
                 context_predictions=context_preds,
                 is_inference=is_inference,
             )
+
+        # ── NegenWM-JEPA-v2 : NER scoring head (non-breaking, enable_ner=False par défaut) ──
+        if self.enable_ner:
+            ner_score, ner_mask = self.ner_head(
+                token_list,
+                images=imgs,
+                patch_start_idx=patch_start_idx,
+                hard_mask=is_inference,
+            )
+            preds["ner_score"] = ner_score   # [B, S, H, W] in [0, 1]
+            preds["ner_mask"]  = ner_mask    # [B, S, H, W] proba (soft) ou bool (hard)
 
         return preds
 

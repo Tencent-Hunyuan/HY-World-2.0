@@ -407,6 +407,11 @@ class WorldMirrorPipeline:
         apply_sky_mask: bool = True,
         apply_edge_mask: bool = True,
         apply_confidence_mask: bool = False,
+        # NegenWM-JEPA-v2 : NER mask (use_ner=False — zéro breaking change)
+        use_ner: bool = False,
+        ner_tau: float = 0.35,
+        ner_lambda_sky: float = 0.30,
+        ner_lambda_edge: float = 0.30,
         save_sky_mask: bool = False,
         sky_mask_source: str = "auto",
         model_sky_threshold: float = 0.45,
@@ -518,6 +523,8 @@ class WorldMirrorPipeline:
                     edge_normal_threshold=edge_normal_threshold,
                     edge_depth_threshold=edge_depth_threshold,
                     sky_mask=sky_mask, use_gs_depth=save_gs,
+                    use_ner=use_ner, ner_tau=ner_tau,
+                    ner_lambda_sky=ner_lambda_sky, ner_lambda_edge=ner_lambda_edge,
                 )
 
             if log_time:
@@ -725,6 +732,12 @@ def main():
     parser.add_argument("--apply_edge_mask", action="store_true", default=True)
     parser.add_argument("--no_edge_mask", dest="apply_edge_mask", action="store_false")
     parser.add_argument("--apply_confidence_mask", action="store_true", default=False)
+    # NegenWM-JEPA-v2 : NER flags (use_ner=False par défaut — zéro breaking change)
+    parser.add_argument("--use_ner", action="store_true", default=False,
+                        help="Use NERHead (NegenWM-JEPA-v2) for differentiable point filtering")
+    parser.add_argument("--ner_tau", type=float, default=0.35, help="NER binarization threshold")
+    parser.add_argument("--ner_lambda_sky", type=float, default=0.30, help="NER sky prior weight")
+    parser.add_argument("--ner_lambda_edge", type=float, default=0.30, help="NER edge prior weight")
     parser.add_argument("--sky_mask_source", type=str, default="auto", choices=["auto", "model", "onnx"])
     parser.add_argument("--model_sky_threshold", type=float, default=0.45)
     parser.add_argument("--confidence_percentile", type=float, default=10.0)
@@ -777,6 +790,10 @@ def main():
         apply_sky_mask=args.apply_sky_mask,
         apply_edge_mask=args.apply_edge_mask,
         apply_confidence_mask=args.apply_confidence_mask,
+        use_ner=args.use_ner,
+        ner_tau=args.ner_tau,
+        ner_lambda_sky=args.ner_lambda_sky,
+        ner_lambda_edge=args.ner_lambda_edge,
         sky_mask_source=args.sky_mask_source,
         model_sky_threshold=args.model_sky_threshold,
         confidence_percentile=args.confidence_percentile,
