@@ -1,6 +1,6 @@
 
 
-<h1>HY-World 2.0：用于重建、生成和模拟3D世界的多模态世界模型</h1>
+<h1>HY-World 2.0：A Multi-Modal World Model for Reconstructing, Generating, and Simulating 3D Worlds</h1>
 
 [English](README.md) | [简体中文](README_zh.md)
 
@@ -12,7 +12,8 @@
   <a href=https://3d.hunyuan.tencent.com/sceneTo3D target="_blank"><img src=https://img.shields.io/badge/Official%20Site-333399.svg?logo=homepage height=22px></a>
   <a href=https://huggingface.co/tencent/HY-World-2.0 target="_blank"><img src=https://img.shields.io/badge/%F0%9F%A4%97%20Models-d96902.svg height=22px></a>
   <a href=https://3d-models.hunyuan.tencent.com/world/ target="_blank"><img src= https://img.shields.io/badge/Page-bb8a2e.svg?logo=github height=22px></a>
-  <a href=https://3d-models.hunyuan.tencent.com/world/world2_0/HY_World_2_0.pdf target="_blank"><img src=https://img.shields.io/badge/Report-b5212f.svg?logo=arxiv height=22px></a>
+  <a href=https://arxiv.org/abs/2604.14268 target="_blank"><img src=https://img.shields.io/badge/Report-b5212f.svg?logo=arxiv height=22px></a>
+   <a href=https://modelscope.cn/models/Tencent-Hunyuan/HY-World-2.0 target="_blank"><img src=https://img.shields.io/badge/ModelScope-Models-624aff.svg height=22px></a>
   <a href=https://discord.gg/dNBrdrGGMa target="_blank"><img src= https://img.shields.io/badge/Discord-white.svg?logo=discord height=22px></a>
   <a href=https://x.com/TencentHunyuan target="_blank"><img src=https://img.shields.io/badge/Tencent%20HY-black.svg?logo=x height=22px></a>
  <a href="#community-resources" target="_blank"><img src=https://img.shields.io/badge/Community-lavender.svg?logo=homeassistantcommunitystore height=22px></a>
@@ -56,7 +57,7 @@ https://github.com/user-attachments/assets/b56f4750-25c9-48fb-83ff-d58526711463
 - **世界生成**（文本 / 单张图像 &rarr; 3D 世界）：通过四阶段方法合成高保真、可导航的3D场景——a) ![全景生成](https://img.shields.io/badge/Panorama_Generation-4285F4?style=flat-square)（HY-Pano 2.0），b) ![轨迹规划](https://img.shields.io/badge/Trajectory_Planning-EA4335?style=flat-square)（WorldNav），c) ![世界扩展](https://img.shields.io/badge/World_Expansion-FBBC05?style=flat-square)（WorldStereo 2.0），d) ![世界组合](https://img.shields.io/badge/World_Composition-34A853?style=flat-square)（WorldMirror 2.0 + 3DGS 学习）。
 - **世界重建**（多视图图像 / 视频 &rarr; 3D）：由 WorldMirror 2.0 驱动，这是一个统一的前馈模型，能够在单次前向传播中同时预测深度、表面法线、相机参数、3D点云和3DGS属性。
 
-HY-World 2.0 是**首个开源的最先进**3D世界模型，其效果可与 Marble 等闭源方法相媲美。我们将发布所有模型权重、代码和技术细节，以促进可复现性和推动该领域的研究进展。
+HY-World 2.0 是**开源的**3D世界模型，我们将发布所有模型权重、代码和技术细节，以促进可复现性和推动该领域的研究进展。
 
 ### 为什么需要3D世界模型？
 
@@ -65,8 +66,8 @@ HY-World 2.0 是**首个开源的最先进**3D世界模型，其效果可与 Mar
 |  | 视频世界模型 | 3D 世界模型（HY-World 2.0） |
 |--|---|---|
 | **输出** | 像素视频（不可编辑） | 真实 3D 资产——网格 / 3DGS（完全可编辑） |
-| **可交互时长** | 有限（通常 < 1 分钟） | 无限——资产永久保存 |
-| **3D 一致性** | 差（闪烁、跨视角伪影） | 原生一致——内在3D一致性 |
+| **可交互时长** | 有限（通常 1 分钟） | 无限——资产永久保存 |
+| **3D 一致性** | 无保证（闪烁、跨视角伪影） | 原生一致——内在3D一致性 |
 | **实时渲染** | 需要逐帧推理；延迟高 | 消费级 GPU 即可实时渲染 |
 | **可控性** | 弱（角色控制不精确，无真实物理） | 精确——零误差控制、真实物理碰撞、准确光照 |
 | **推理成本** | 随每次交互累积 | 一次生成；渲染成本 ≈ 0 |
@@ -108,7 +109,7 @@ HY-World 2.0 是**首个开源的最先进**3D世界模型，其效果可与 Mar
 
 - **交互式角色探索**
 
-  不仅仅是观看——**在生成的世界中自由漫游**。HY-World 2.0 支持第一人称导航和第三人称角色模式，用户可以在 AI 生成的街道、建筑和景观中自由探索，并具备基于物理的碰撞效果。前往[我们的产品页面]()免费体验。
+  不仅仅是观看——**在生成的世界中自由漫游**。HY-World 2.0 支持第一人称导航和第三人称角色模式，用户可以在 AI 生成的街道、建筑和景观中自由探索，并具备基于物理的碰撞效果。前往[我们的产品页面](https://3d.hunyuan.tencent.com/sceneTo3D)免费体验 (![Very Crowded Now](https://img.shields.io/badge/Very_Crowded_Now,_Be_Patient-EA4335?style=flat-square))。
 
 <p align="center">
   <img src="assets/interactive.gif" width="95%">
@@ -117,7 +118,7 @@ HY-World 2.0 是**首个开源的最先进**3D世界模型，其效果可与 Mar
 ## 🧩 架构
 - **详细信息请参阅我们的技术报告**
 
-  HY-World 2.0 的系统化流水线——*全景生成*（HY-Pano-2.0）&rarr; *轨迹规划*（WorldNav）&rarr; *世界扩展*（WorldStereo 2.0）&rarr; *世界组合*（WorldMirror 2.0 + 3DGS）——能够自动将文本或单张图像转化为高保真、可导航的3D世界（3DGS/网格输出）。
+  HY-World 2.0 的系统化流水线——*全景生成*（HY-Pano-2.0）&rarr; *轨迹规划*（WorldNav）&rarr; *世界扩展*（WorldStereo 2.0）&rarr; *世界组合*（WorldMirror 2.0 + Splattings Learning）——能够自动将文本或单张图像转化为高保真、可漫游的3D世界（3DGS/网格输出）。
 
 <p align="center">
   <img src="assets/overview.png" width="95%">
@@ -128,7 +129,7 @@ HY-World 2.0 是**首个开源的最先进**3D世界模型，其效果可与 Mar
 - ✅ 技术报告
 - ✅ WorldMirror 2.0 代码和模型权重
 - ⬜ 世界生成完整推理代码（WorldNav + World Composition）
-- ⬜ 全景生成（HY-Pano 2.0）模型和代码 — 可使用 [HunyuanWorld 1.0](https://github.com/Tencent-Hunyuan/HunyuanWorld-1.0) 作为临时替代
+- ⬜ 全景生成（HY-Pano 2.0）模型和代码 — 可使用 [HunyuanWorld 1.0](https://github.com/Tencent-Hunyuan/HunyuanWorld-1.0)的全景图生成 作为临时替代
 - ⬜ 世界扩展（WorldStereo 2.0）模型和代码 — 可使用 [WorldStereo](https://github.com/FuchengSu/WorldStereo) 作为临时替代
 
 
@@ -138,8 +139,13 @@ HY-World 2.0 是**首个开源的最先进**3D世界模型，其效果可与 Mar
 
 | 模型 | 描述 | 参数量 | 日期 | Hugging Face |
 |------|------|--------|------|--------------|
+<<<<<<< HEAD
 | WorldMirror-2 [new] | 多视图 / 视频 &rarr; 3D 重建 | ~1.2B | 2026 | [下载](https://huggingface.co/tencent/HY-World-2.0/tree/main/HY-WorldMirror-2.0) |
 | WorldMirror-1 | 多视图 / 视频 &rarr; 3D 重建（旧版） | ~1.2B | 2025 | [下载](https://huggingface.co/tencent/HunyuanWorld-Mirror/tree/main) |
+=======
+| WorldMirror-2 [new] | 多视图 / 视频 &rarr; 3D 重建 | ~1.2B | 2026.4 | [下载](https://huggingface.co/tencent/HY-World-2.0/HY-WorldMirror-2.0) |
+| WorldMirror-1 | 多视图 / 视频 &rarr; 3D 重建（旧版） | ~1.2B | 2025.10 | [下载](https://huggingface.co/tencent/HunyuanWorld-Mirror/tree/main) |
+>>>>>>> 549819215ccf28a4c364f456be6de50f08a3ad80
 
 ### 全景生成 — HY_Pano 系列
 
@@ -154,6 +160,11 @@ HY-World 2.0 是**首个开源的最先进**3D世界模型，其效果可与 Mar
 | WorldStereo-2 [new] | 全景 &rarr; 完整 3DGS 世界 | — | 即将发布 | — |
 
 ### 空间规划 - WorldNav系列
+
+| 算法            | 描述 | 参数量 | 日期 |  
+|-----------------|------|--------|------| 
+| WorldNav [new] | 全景 &rarr; 完整 3DGS 世界 | — | 即将发布 |  
+
 
 我们建议参考我们之前的工作 [WorldStereo](https://github.com/FuchengSu/WorldStereo) 和 [WorldMirror](https://github.com/Tencent-Hunyuan/HunyuanWorld-Mirror)，以了解3D世界生成和重建的背景知识。
 
@@ -453,8 +464,8 @@ torchrun --nproc_per_node=2 -m hyworld2.worldrecon.gradio_app \
 
 ```bibtex
 @article{hyworld22026,
-  title={HY-World 2.0: A Multi-Modal World Model for Reconstructing, Generating and Simulating 3D Worlds},
-  author={Tencent HY-World Team},
+  title={HY-World 2.0: A Multi-Modal World Model for Reconstructing, Generating, and Simulating 3D Worlds},
+  author={Team HY-World},
   journal={arXiv preprint},
   year={2026}
 }
