@@ -470,7 +470,6 @@ If you find HunyuanWorld 2.0 useful for your research, please cite:
 }
 ```
 
-
 ## 📧 Contact
 
 Please send emails to tengfeiwang12@gmail.com for questions or feedback.
