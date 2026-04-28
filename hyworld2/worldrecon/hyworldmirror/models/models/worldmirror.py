@@ -339,9 +339,38 @@ class WorldMirror(nn.Module, PyTorchModelHubMixin):
         my_end = my_start + my_count
         has_frames = my_count > 0
 
+        # Compute max frame count across all ranks. When FSDP + bf16 wraps
+        # submodules (output_conv2) inside DPT heads, each internal chunk
+        # iteration triggers an AllGather. If ranks have different my_count
+        # values, ceil(my_count / frames_chunk_size) may differ across ranks,
+        # causing an NCCL deadlock. Padding all ranks to the same frame count
+        # ensures identical iteration counts.
+        if S >= sp_size:
+            max_count = (S // sp_size) + (1 if S % sp_size else 0)
+        else:
+            max_count = 1 if S > 0 else 0
+        pad_count = max_count - my_count
+
         if has_frames:
             token_list_chunk = [t[:, my_start:my_end].contiguous() for t in token_list]
             imgs_chunk = imgs[:, my_start:my_end].contiguous()
+            # Pad to max_count by repeating the last frame (zero-copy expand + cat)
+            if pad_count > 0:
+                token_list_chunk = [
+                    torch.cat([t, t[:, -1:].expand(
+                        -1, pad_count, *(-1,) * (t.dim() - 2))], dim=1)
+                    for t in token_list_chunk
+                ]
+                imgs_chunk = torch.cat(
+                    [imgs_chunk, imgs_chunk[:, -1:].expand(-1, pad_count, -1, -1, -1)], dim=1
+                )
+        else:
+            # Rank has no frames (S < sp_size). Use first global frame as dummy.
+            token_list_chunk = [t[:, :1].expand(
+                -1, max_count, *(-1,) * (t.dim() - 2)).contiguous() for t in token_list]
+            imgs_chunk = imgs[:, :1].expand(-1, max_count, -1, -1, -1).contiguous()
+
+        run_heads = max_count > 0
 
         # Camera head: runs on ALL frames on every rank (cross-view attention)
         if self.enable_cam:
@@ -352,17 +381,22 @@ class WorldMirror(nn.Module, PyTorchModelHubMixin):
             preds["camera_poses"] = c2w_mat
             preds["camera_intrs"] = int_mat
 
-        # DPT heads: frame-parallel
+        # DPT heads: frame-parallel with uniform frame count across ranks
         if self.enable_depth:
-            if has_frames:
+            if run_heads:
                 if self.enable_depth_mask:
-                    depth_chunk, depth_conf_chunk, depth_mask_logits_chunk = self.depth_head(
+                    depth_padded, depth_conf_padded, depth_mask_padded = self.depth_head(
                         token_list_chunk, images=imgs_chunk, patch_start_idx=patch_start_idx,
                     )
+                    depth_chunk = depth_padded[:, :my_count]
+                    depth_conf_chunk = depth_conf_padded[:, :my_count]
+                    depth_mask_logits_chunk = depth_mask_padded[:, :my_count]
                 else:
-                    depth_chunk, depth_conf_chunk = self.depth_head(
+                    depth_padded, depth_conf_padded = self.depth_head(
                         token_list_chunk, images=imgs_chunk, patch_start_idx=patch_start_idx,
                     )
+                    depth_chunk = depth_padded[:, :my_count]
+                    depth_conf_chunk = depth_conf_padded[:, :my_count]
             else:
                 depth_chunk = torch.zeros(B, 0, H, W, 1, dtype=imgs.dtype, device=imgs.device)
                 depth_conf_chunk = torch.zeros(B, 0, H, W, dtype=imgs.dtype, device=imgs.device)
@@ -379,10 +413,12 @@ class WorldMirror(nn.Module, PyTorchModelHubMixin):
                 preds["depth_mask"] = depth_mask_logits_full.sigmoid()
 
         if self.enable_pts:
-            if has_frames:
-                pts_chunk, pts_conf_chunk = self.pts_head(
+            if run_heads:
+                pts_padded, pts_conf_padded = self.pts_head(
                     token_list_chunk, images=imgs_chunk, patch_start_idx=patch_start_idx,
                 )
+                pts_chunk = pts_padded[:, :my_count]
+                pts_conf_chunk = pts_conf_padded[:, :my_count]
             else:
                 pts_chunk = torch.zeros(B, 0, H, W, 3, dtype=imgs.dtype, device=imgs.device)
                 pts_conf_chunk = torch.zeros(B, 0, H, W, dtype=imgs.dtype, device=imgs.device)
@@ -391,10 +427,12 @@ class WorldMirror(nn.Module, PyTorchModelHubMixin):
             preds["pts3d_conf"] = self._frame_allgather_variable(pts_conf_chunk, my_count, S, sp_size, sp_group, dim=1)
 
         if self.enable_norm:
-            if has_frames:
-                normals_chunk, norm_conf_chunk = self.norm_head(
+            if run_heads:
+                norm_padded, norm_conf_padded = self.norm_head(
                     token_list_chunk, images=imgs_chunk, patch_start_idx=patch_start_idx,
                 )
+                normals_chunk = norm_padded[:, :my_count]
+                norm_conf_chunk = norm_conf_padded[:, :my_count]
             else:
                 normals_chunk = torch.zeros(B, 0, H, W, 3, dtype=imgs.dtype, device=imgs.device)
                 norm_conf_chunk = torch.zeros(B, 0, H, W, dtype=imgs.dtype, device=imgs.device)
@@ -409,18 +447,53 @@ class WorldMirror(nn.Module, PyTorchModelHubMixin):
             gs_imgs = context_preds.get("imgs", imgs)
             gs_S = gs_imgs.shape[1]
 
-            if gs_S == S and has_frames:
-                gs_token_chunk = [t[:, my_start:my_end].contiguous() for t in gs_token_list]
-                gs_imgs_chunk = gs_imgs[:, my_start:my_end].contiguous()
-
-                if self.enable_depth_mask:
-                    gs_feat_chunk, gs_depth_chunk, gs_depth_conf_chunk, gs_dmask_chunk = self.gs_head(
-                        gs_token_chunk, images=gs_imgs_chunk, patch_start_idx=patch_start_idx,
-                    )
+            if gs_S == S:
+                # Reuse padded chunks if gs uses the same token_list/imgs
+                if gs_token_list is token_list and gs_imgs is imgs:
+                    gs_token_chunk = token_list_chunk
+                    gs_imgs_chunk = imgs_chunk
                 else:
-                    gs_feat_chunk, gs_depth_chunk, gs_depth_conf_chunk = self.gs_head(
-                        gs_token_chunk, images=gs_imgs_chunk, patch_start_idx=patch_start_idx,
-                    )
+                    # Build padded GS chunks from gs-specific data
+                    if has_frames:
+                        gs_token_chunk = [t[:, my_start:my_end].contiguous() for t in gs_token_list]
+                        gs_imgs_chunk = gs_imgs[:, my_start:my_end].contiguous()
+                        if pad_count > 0:
+                            gs_token_chunk = [
+                                torch.cat([t, t[:, -1:].expand(
+                                    -1, pad_count, *(-1,) * (t.dim() - 2))], dim=1)
+                                for t in gs_token_chunk
+                            ]
+                            gs_imgs_chunk = torch.cat(
+                                [gs_imgs_chunk, gs_imgs_chunk[:, -1:].expand(-1, pad_count, -1, -1, -1)], dim=1
+                            )
+                    else:
+                        gs_token_chunk = [t[:, :1].expand(
+                            -1, max_count, *(-1,) * (t.dim() - 2)).contiguous() for t in gs_token_list]
+                        gs_imgs_chunk = gs_imgs[:, :1].expand(-1, max_count, -1, -1, -1).contiguous()
+
+                if run_heads:
+                    if self.enable_depth_mask:
+                        gs_feat_p, gs_depth_p, gs_depth_conf_p, gs_dmask_p = self.gs_head(
+                            gs_token_chunk, images=gs_imgs_chunk, patch_start_idx=patch_start_idx,
+                        )
+                        gs_feat_chunk = gs_feat_p[:, :my_count]
+                        gs_depth_chunk = gs_depth_p[:, :my_count]
+                        gs_depth_conf_chunk = gs_depth_conf_p[:, :my_count]
+                        gs_dmask_chunk = gs_dmask_p[:, :my_count]
+                    else:
+                        gs_feat_p, gs_depth_p, gs_depth_conf_p = self.gs_head(
+                            gs_token_chunk, images=gs_imgs_chunk, patch_start_idx=patch_start_idx,
+                        )
+                        gs_feat_chunk = gs_feat_p[:, :my_count]
+                        gs_depth_chunk = gs_depth_p[:, :my_count]
+                        gs_depth_conf_chunk = gs_depth_conf_p[:, :my_count]
+                else:
+                    gs_feat_c = self.gs_dim // 2
+                    gs_feat_chunk = torch.zeros(B, 0, gs_feat_c, H, W, dtype=imgs.dtype, device=imgs.device)
+                    gs_depth_chunk = torch.zeros(B, 0, H, W, 1, dtype=imgs.dtype, device=imgs.device)
+                    gs_depth_conf_chunk = torch.zeros(B, 0, H, W, dtype=imgs.dtype, device=imgs.device)
+                    if self.enable_depth_mask:
+                        gs_dmask_chunk = torch.zeros(B, 0, H, W, dtype=imgs.dtype, device=imgs.device)
 
                 gs_feat = self._frame_allgather_variable(gs_feat_chunk, my_count, gs_S, sp_size, sp_group, dim=1)
                 gs_depth = self._frame_allgather_variable(gs_depth_chunk, my_count, gs_S, sp_size, sp_group, dim=1)
@@ -432,22 +505,6 @@ class WorldMirror(nn.Module, PyTorchModelHubMixin):
                     preds["gs_depth_mask_logits"] = gs_depth_mask_logits
                     preds["gs_depth_mask"] = gs_depth_mask_logits.sigmoid()
 
-            elif gs_S == S and not has_frames:
-                gs_feat_c = self.gs_dim // 2
-                gs_feat_chunk = torch.zeros(B, 0, gs_feat_c, H, W, dtype=imgs.dtype, device=imgs.device)
-                gs_depth_chunk = torch.zeros(B, 0, H, W, 1, dtype=imgs.dtype, device=imgs.device)
-                gs_depth_conf_chunk = torch.zeros(B, 0, H, W, dtype=imgs.dtype, device=imgs.device)
-
-                gs_feat = self._frame_allgather_variable(gs_feat_chunk, 0, gs_S, sp_size, sp_group, dim=1)
-                gs_depth = self._frame_allgather_variable(gs_depth_chunk, 0, gs_S, sp_size, sp_group, dim=1)
-                gs_depth_conf = self._frame_allgather_variable(gs_depth_conf_chunk, 0, gs_S, sp_size, sp_group, dim=1)
-                if self.enable_depth_mask:
-                    gs_dmask_chunk = torch.zeros(B, 0, H, W, dtype=imgs.dtype, device=imgs.device)
-                    gs_depth_mask_logits = self._frame_allgather_variable(
-                        gs_dmask_chunk, 0, gs_S, sp_size, sp_group, dim=1,
-                    )
-                    preds["gs_depth_mask_logits"] = gs_depth_mask_logits
-                    preds["gs_depth_mask"] = gs_depth_mask_logits.sigmoid()
             else:
                 if self.enable_depth_mask:
                     gs_feat, gs_depth, gs_depth_conf, gs_depth_mask_logits = self.gs_head(
