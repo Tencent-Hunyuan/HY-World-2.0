@@ -192,7 +192,7 @@ def get_system_prompt(sys_type, bot_task, system_prompt=None):
     # Dynamic mode: automatically select system prompt based on bot_task type
     elif sys_type == "dynamic":
         # Think task: use chain-of-thought recaption prompt
-        if bot_task == "think":
+        if bot_task in ("think", "think_recaption"):
             return t2i_system_prompts["en_think_recaption"][0]
         # Recaption task: use recaption prompt
         elif bot_task == "recaption":
