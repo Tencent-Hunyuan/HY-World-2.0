@@ -401,7 +401,9 @@ def _compute_clarity_parallel(all_frames):
         clarity = cv2.Laplacian(gray, cv2.CV_64F).var()
         return (window_idx, frame_idx, frame, clarity)
     
-    with ThreadPoolExecutor(max_workers=min(8, len(all_frames) or 1)) as ex:
+    if not all_frames:
+        return []
+    with ThreadPoolExecutor(max_workers=min(8, len(all_frames))) as ex:
         return list(ex.map(_compute, all_frames))
 
 
@@ -449,9 +451,11 @@ def _save_frames_parallel(target_to_best, candidate_indices, save_directory):
         cv2.imwrite(p_f[0], p_f[1])
         return p_f[0]
     
-    with ThreadPoolExecutor(max_workers=min(8, len(path_frame_list) or 1)) as ex:
+    if not path_frame_list:
+        return final_indices, []
+    with ThreadPoolExecutor(max_workers=min(8, len(path_frame_list))) as ex:
         paths = list(ex.map(_write, path_frame_list))
-    
+
     return final_indices, paths
 
 

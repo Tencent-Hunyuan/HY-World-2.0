@@ -1,0 +1,62 @@
+task_idx,prompt,sample_idx,duration_s,ram_gb,vram_gb,out_path,status
+0,a bar with chairs and a television on the wall,0,95.55,5.20,2.50,C:\workspace\world\HY-World-2.0\results_vbench\videos\a bar with chairs and a television on the wall-0.mp4,no_render
+1,a living room filled with lots of books on a wall,0,10.81,5.19,2.38,C:\workspace\world\HY-World-2.0\results_vbench\videos\a living room filled with lots of books on a wall-0.mp4,no_render
+2,a living room filled with furniture next to a stone wall,0,9.18,5.16,2.38,C:\workspace\world\HY-World-2.0\results_vbench\videos\a living room filled with furniture next to a stone wall-0.mp4,no_render
+3,a table and chairs in a room with sunlight coming through the window,0,10.76,5.02,2.38,C:\workspace\world\HY-World-2.0\results_vbench\videos\a table and chairs in a room with sunlight coming through the window-0.mp4,no_render
+4,a room filled with lots of shelves filled with books,0,11.71,5.13,2.38,C:\workspace\world\HY-World-2.0\results_vbench\videos\a room filled with lots of shelves filled with books-0.mp4,no_render
+5,an art gallery with paintings on the walls,0,2.61,4.85,2.38,C:\workspace\world\HY-World-2.0\results_vbench\videos\an art gallery with paintings on the walls-0.mp4,no_render
+6,a room with a lot of pictures on the walls,0,2.46,4.80,2.38,C:\workspace\world\HY-World-2.0\results_vbench\videos\a room with a lot of pictures on the walls-0.mp4,no_render
+7,a painting of a cloudy sky next to an easel,0,1.74,4.79,2.38,C:\workspace\world\HY-World-2.0\results_vbench\videos\a painting of a cloudy sky next to an easel-0.mp4,no_render
+8,a living room with a christmas tree and a rocking chair,0,1.94,4.74,2.38,C:\workspace\world\HY-World-2.0\results_vbench\videos\a living room with a christmas tree and a rocking chair-0.mp4,no_render
+9,a kitchen with a sink and a lot of glasses on the counter,0,1.79,4.75,2.38,C:\workspace\world\HY-World-2.0\results_vbench\videos\a kitchen with a sink and a lot of glasses on the counter-0.mp4,no_render
+10,a wooden table in front of a brick wall with bottles on the wall,0,2.04,4.74,2.38,C:\workspace\world\HY-World-2.0\results_vbench\videos\a wooden table in front of a brick wall with bottles on the wall-0.mp4,no_render
+11,a room filled with paintings and statues,0,2.04,4.69,2.38,C:\workspace\world\HY-World-2.0\results_vbench\videos\a room filled with paintings and statues-0.mp4,no_render
+12,an outdoor dining area surrounded by plants and a brick walkway,0,2.02,4.65,2.38,C:\workspace\world\HY-World-2.0\results_vbench\videos\an outdoor dining area surrounded by plants and a brick walkway-0.mp4,no_render
+13,a room filled with books and teddy bears,0,2.04,4.63,2.38,C:\workspace\world\HY-World-2.0\results_vbench\videos\a room filled with books and teddy bears-0.mp4,no_render
+14,a table and chairs in a room with a plant in the corner,0,1.91,4.60,2.38,C:\workspace\world\HY-World-2.0\results_vbench\videos\a table and chairs in a room with a plant in the corner-0.mp4,no_render
+15,"a living room with a couch, table, and a window",0,2.03,4.56,2.38,"C:\workspace\world\HY-World-2.0\results_vbench\videos\a living room with a couch, table, and a window-0.mp4",no_render
+16,a modern living room with wood floors and a tv,0,1.98,4.53,2.38,C:\workspace\world\HY-World-2.0\results_vbench\videos\a modern living room with wood floors and a tv-0.mp4,no_render
+17,a room with a desk and a chair in it,0,5.64,5.43,2.38,C:\workspace\world\HY-World-2.0\results_vbench\videos\a room with a desk and a chair in it-0.mp4,no_render
+18,a large waterfall in the middle of a building,0,4.83,5.19,2.38,C:\workspace\world\HY-World-2.0\results_vbench\videos\a large waterfall in the middle of a building-0.mp4,no_render
+19,a chair in a room next to some drawings,0,7.75,5.33,2.38,C:\workspace\world\HY-World-2.0\results_vbench\videos\a chair in a room next to some drawings-0.mp4,no_render
+20,a living room with hardwood floors and a white couch,0,11.22,5.08,2.38,C:\workspace\world\HY-World-2.0\results_vbench\videos\a living room with hardwood floors and a white couch-0.mp4,no_render
+21,two people in a canoe on a lake with mountains in the background,0,11.52,5.10,2.38,C:\workspace\world\HY-World-2.0\results_vbench\videos\two people in a canoe on a lake with mountains in the background-0.mp4,no_render
+22,an aerial view of a snowy road in a forest,0,11.12,5.22,2.38,C:\workspace\world\HY-World-2.0\results_vbench\videos\an aerial view of a snowy road in a forest-0.mp4,no_render
+23,a view of a waterfall from a distance,0,3.21,4.99,2.38,C:\workspace\world\HY-World-2.0\results_vbench\videos\a view of a waterfall from a distance-0.mp4,no_render
+24,a group of hot air balloons flying over a valley,0,2.63,4.98,2.38,C:\workspace\world\HY-World-2.0\results_vbench\videos\a group of hot air balloons flying over a valley-0.mp4,no_render
+25,an aerial view of a group of islands in the middle of a lake,0,1.96,4.99,2.38,C:\workspace\world\HY-World-2.0\results_vbench\videos\an aerial view of a group of islands in the middle of a lake-0.mp4,no_render
+26,an aerial view of a rocky beach in indonesia,0,2.42,5.01,2.38,C:\workspace\world\HY-World-2.0\results_vbench\videos\an aerial view of a rocky beach in indonesia-0.mp4,no_render
+27,fireworks in the night sky over a city,0,1.59,4.96,2.38,C:\workspace\world\HY-World-2.0\results_vbench\videos\fireworks in the night sky over a city-0.mp4,no_render
+28,a large wave crashes into a lighthouse on a stormy day,0,1.65,4.96,2.38,C:\workspace\world\HY-World-2.0\results_vbench\videos\a large wave crashes into a lighthouse on a stormy day-0.mp4,no_render
+29,a mountain range with a sky background,0,1.64,4.99,2.38,C:\workspace\world\HY-World-2.0\results_vbench\videos\a mountain range with a sky background-0.mp4,no_render
+30,a large bonfire is burning in the night sky,0,1.67,4.94,2.38,C:\workspace\world\HY-World-2.0\results_vbench\videos\a large bonfire is burning in the night sky-0.mp4,no_render
+31,a close-up view of the flames of a fireplace,0,1.62,4.90,2.38,C:\workspace\world\HY-World-2.0\results_vbench\videos\a close-up view of the flames of a fireplace-0.mp4,no_render
+32,a farm in the middle of the day,0,1.92,4.93,2.38,C:\workspace\world\HY-World-2.0\results_vbench\videos\a farm in the middle of the day-0.mp4,no_render
+33,a flock of birds flying over a tree at sunset,0,1.45,4.88,2.38,C:\workspace\world\HY-World-2.0\results_vbench\videos\a flock of birds flying over a tree at sunset-0.mp4,no_render
+34,a captivating scene featuring a spiral galaxy shining brilliantly in the night sky,0,1.61,4.92,2.38,C:\workspace\world\HY-World-2.0\results_vbench\videos\a captivating scene featuring a spiral galaxy shining brilliantly in the night sky-0.mp4,no_render
+35,a mountain with snow on it,0,1.51,4.90,2.38,C:\workspace\world\HY-World-2.0\results_vbench\videos\a mountain with snow on it-0.mp4,no_render
+36,a bridge that is in the middle of a river,0,1.91,4.96,2.38,C:\workspace\world\HY-World-2.0\results_vbench\videos\a bridge that is in the middle of a river-0.mp4,no_render
+37,a group of people standing on top of a green hill,0,5.53,5.53,2.38,C:\workspace\world\HY-World-2.0\results_vbench\videos\a group of people standing on top of a green hill-0.mp4,no_render
+38,a sandy beach with a wooden pier in the water,0,4.74,5.31,2.38,C:\workspace\world\HY-World-2.0\results_vbench\videos\a sandy beach with a wooden pier in the water-0.mp4,no_render
+39,a lake surrounded by mountains and flowers,0,8.56,5.54,2.38,C:\workspace\world\HY-World-2.0\results_vbench\videos\a lake surrounded by mountains and flowers-0.mp4,no_render
+40,a hot-air balloon flying over a desert landscape,0,5.03,5.51,2.38,C:\workspace\world\HY-World-2.0\results_vbench\videos\a hot-air balloon flying over a desert landscape-0.mp4,no_render
+41,several hot air balloons flying over a city,0,7.71,5.56,2.38,C:\workspace\world\HY-World-2.0\results_vbench\videos\several hot air balloons flying over a city-0.mp4,no_render
+42,a group of hot air balloons flying over a field,0,11.32,5.50,2.38,C:\workspace\world\HY-World-2.0\results_vbench\videos\a group of hot air balloons flying over a field-0.mp4,no_render
+43,a large wave crashes over a rocky cliff,0,7.95,5.49,2.38,C:\workspace\world\HY-World-2.0\results_vbench\videos\a large wave crashes over a rocky cliff-0.mp4,no_render
+44,the sun is setting over a lake in the mountains,0,7.87,5.45,2.38,C:\workspace\world\HY-World-2.0\results_vbench\videos\the sun is setting over a lake in the mountains-0.mp4,no_render
+45,a mountain range with snow on the ground,0,1.83,5.18,2.38,C:\workspace\world\HY-World-2.0\results_vbench\videos\a mountain range with snow on the ground-0.mp4,no_render
+46,sun rays shining through clouds over a lake,0,1.69,5.12,2.38,C:\workspace\world\HY-World-2.0\results_vbench\videos\sun rays shining through clouds over a lake-0.mp4,no_render
+47,a boat sits on the shore of a lake with mt fuji in the background,0,1.98,5.12,2.38,C:\workspace\world\HY-World-2.0\results_vbench\videos\a boat sits on the shore of a lake with mt fuji in the background-0.mp4,no_render
+48,a foggy road with trees in the distance,0,1.71,5.07,2.38,C:\workspace\world\HY-World-2.0\results_vbench\videos\a foggy road with trees in the distance-0.mp4,no_render
+49,two swans swimming on a lake in the fog,0,1.58,5.05,2.38,C:\workspace\world\HY-World-2.0\results_vbench\videos\two swans swimming on a lake in the fog-0.mp4,no_render
+50,the sun is shining through the trees near a waterfall,0,1.80,5.10,2.38,C:\workspace\world\HY-World-2.0\results_vbench\videos\the sun is shining through the trees near a waterfall-0.mp4,no_render
+51,a sandy beach with palm trees on the shore,0,1.56,4.99,2.38,C:\workspace\world\HY-World-2.0\results_vbench\videos\a sandy beach with palm trees on the shore-0.mp4,no_render
+52,an aerial view of a body of water and a beach,0,1.65,5.02,2.38,C:\workspace\world\HY-World-2.0\results_vbench\videos\an aerial view of a body of water and a beach-0.mp4,no_render
+53,a foggy field that has trees in the grass,0,1.61,4.97,2.38,C:\workspace\world\HY-World-2.0\results_vbench\videos\a foggy field that has trees in the grass-0.mp4,no_render
+54,a foggy landscape with trees and hills in the distance,0,1.64,4.95,2.38,C:\workspace\world\HY-World-2.0\results_vbench\videos\a foggy landscape with trees and hills in the distance-0.mp4,no_render
+55,a large wave in the ocean with a lot of spray coming from it,0,1.62,4.94,2.38,C:\workspace\world\HY-World-2.0\results_vbench\videos\a large wave in the ocean with a lot of spray coming from it-0.mp4,no_render
+56,a waterfall is shown in the middle of a lush green hillside,0,1.64,4.93,2.38,C:\workspace\world\HY-World-2.0\results_vbench\videos\a waterfall is shown in the middle of a lush green hillside-0.mp4,no_render
+57,an aerial view of a curvy road in the middle of a forest,0,1.78,4.89,2.38,C:\workspace\world\HY-World-2.0\results_vbench\videos\an aerial view of a curvy road in the middle of a forest-0.mp4,no_render
+58,a mountain covered in snow with evergreen trees,0,1.90,4.87,2.38,C:\workspace\world\HY-World-2.0\results_vbench\videos\a mountain covered in snow with evergreen trees-0.mp4,no_render
+59,a very large waterfall in the middle of the day,0,5.20,5.26,2.38,C:\workspace\world\HY-World-2.0\results_vbench\videos\a very large waterfall in the middle of the day-0.mp4,no_render
+60,a large waterfall in the middle of a lush green hillside,0,4.35,4.99,2.38,C:\workspace\world\HY-World-2.0\results_vbench\videos\a large waterfall in the middle of a lush green hillside-0.mp4,no_render

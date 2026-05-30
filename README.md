@@ -12,8 +12,7 @@
   <a href=https://3d.hunyuan.tencent.com/sceneTo3D target="_blank"><img src=https://img.shields.io/badge/Official%20Site-333399.svg?logo=homepage height=22px></a>
   <a href=https://huggingface.co/tencent/HY-World-2.0 target="_blank"><img src=https://img.shields.io/badge/%F0%9F%A4%97%20Models-d96902.svg height=22px></a>
   <a href=https://3d-models.hunyuan.tencent.com/world/ target="_blank"><img src= https://img.shields.io/badge/Page-bb8a2e.svg?logo=github height=22px></a>
-  <a href=https://arxiv.org/abs/2604.14268 target="_blank"><img src=https://img.shields.io/badge/Report-b5212f.svg?logo=arxiv height=22px></a>
-   <a href=https://modelscope.cn/models/Tencent-Hunyuan/HY-World-2.0 target="_blank"><img src=https://img.shields.io/badge/ModelScope-Models-624aff.svg height=22px></a>
+  <a href=https://3d-models.hunyuan.tencent.com/world/world2_0/HY_World_2_0.pdf target="_blank"><img src=https://img.shields.io/badge/Report-b5212f.svg?logo=arxiv height=22px></a>
   <a href=https://discord.gg/dNBrdrGGMa target="_blank"><img src= https://img.shields.io/badge/Discord-white.svg?logo=discord height=22px></a>
   <a href=https://x.com/TencentHunyuan target="_blank"><img src=https://img.shields.io/badge/Tencent%20HY-black.svg?logo=x height=22px></a>
  <a href="#community-resources" target="_blank"><img src=https://img.shields.io/badge/Community-lavender.svg?logo=homeassistantcommunitystore height=22px></a>
@@ -29,10 +28,12 @@ https://github.com/user-attachments/assets/b56f4750-25c9-48fb-83ff-d58526711463
 
 ## 🔥 News
 
-- **[May 18, 2026]**: 🤗 Open-source World Generation inference code and WorldStereo 2.0 model weights!
-- **[May 11, 2026]**: 🤗 Open-source HY-Pano 2.0 inference code and model weights!
 - **[April 16, 2026]**: 🚀 Release HY-World 2.0 technical report & partial codes!
 - **[April 16, 2026]**: 🤗 Open-source WorldMirror 2.0 inference code and model weights!
+- **[Coming Soon]**: Release Full HY-World 2.0 (World Generation) inference code.
+- **[Coming Soon]**: Release ![Panorama Generation](https://img.shields.io/badge/Panorama_Generation-4285F4?style=flat-square) (HY-Pano 2.0) model weights & code.
+- **[Coming Soon]**: Release ![Trajectory Planning](https://img.shields.io/badge/Trajectory_Planning-EA4335?style=flat-square)（WorldNav） code.
+- **[Coming Soon]**: Release ![World Expansion](https://img.shields.io/badge/World_Expansion-FBBC05?style=flat-square)(WorldStereo 2.0) model weights & inference code.
 
 
 ## 📋 Table of Contents
@@ -54,7 +55,7 @@ https://github.com/user-attachments/assets/b56f4750-25c9-48fb-83ff-d58526711463
 - **World Generation** (text / single image &rarr; 3D world): syntheses high-fidelity, navigable 3D scenes through a four-stage method —— a) ![Panorama Generation](https://img.shields.io/badge/Panorama_Generation-4285F4?style=flat-square) with HY-Pano 2.0, b) ![Trajectory Planning](https://img.shields.io/badge/Trajectory_Planning-EA4335?style=flat-square) with WorldNav, c) ![World Expansion](https://img.shields.io/badge/World_Expansion-FBBC05?style=flat-square) with WorldStereo 2.0, and d) ![World Composition](https://img.shields.io/badge/World_Composition-34A853?style=flat-square) with WorldMirror 2.0 & 3DGS learning.
 - **World Reconstruction** (multi-view images / video &rarr; 3D): Powered by WorldMirror 2.0, a unified feed-forward model that simultaneously predicts depth, surface normals, camera parameters, 3D point clouds, and 3DGS attributes in a single forward pass.
 
-HY-World 2.0 is an **open-source state-of-the-art** world model.  We released all model weights, code, and technical details to facilitate reproducibility and advance research in this field.
+HY-World 2.0 is an **open-source state-of-the-art** world model.  We will release all model weights, code, and technical details to facilitate reproducibility and advance research in this field.
 
 ### Why 3D World Models?
 
@@ -122,14 +123,13 @@ Existing world models, such as Genie 3, Cosmos, and HY-World 1.5 (WorldPlay+Worl
   <img src="assets/overview.png" width="95%">
 </p>
 
-
 ## 📝 Open-Source Plan
 
-- [x] Technical Report
-- [x] WorldMirror 2.0 Code & Model Checkpoints
-- [x] Full Inference Code for World Generation (WorldNav + WorldStereo + World Composition)
-- [x] Panorama Generation (HY-Pano 2.0) Model & Code
-- [x] World Expansion (WorldStereo 2.0) Model & Code
+- ✅ Technical Report
+- ✅ WorldMirror 2.0 Code & Model Checkpoints
+- ⬜ Full Inference Code for World Generation (WorldNav + World Composition)
+- ⬜ Panorama Generation (HY-Pano 2.0) Model & Code — [HunyuanWorld 1.0](https://github.com/Tencent-Hunyuan/HunyuanWorld-1.0) available as interim alternative
+- ⬜ World Expansion (WorldStereo 2.0) Model & Code — [WorldStereo](https://github.com/FuchengSu/WorldStereo) available as interim alternative
 
 
 ## 🎁 Model Zoo
@@ -138,21 +138,25 @@ Existing world models, such as Genie 3, Cosmos, and HY-World 1.5 (WorldPlay+Worl
 
 | Model | Description | Params | Date | Hugging Face |
 |-------|-------------|--------|------|--------------|
-| WorldMirror-2 [new] | Multi-view / video &rarr; 3D reconstruction | ~1.2B | 2026 | [Download](https://huggingface.co/tencent/HY-World-2.0/tree/main/HY-WorldMirror-2.0) |
-| WorldMirror-1 | Multi-view / video &rarr; 3D reconstruction (legacy) | ~1.2B | 2025 | [Download](https://huggingface.co/tencent/HunyuanWorld-Mirror/tree/main) |
+| WorldMirror-2 [new] | Multi-view / video &rarr; 3D reconstruction | ~1.2B | 2026.4 | [Download](https://huggingface.co/tencent/HY-World-2.0/HY-WorldMirror-2.0) |
+| WorldMirror-1 | Multi-view / video &rarr; 3D reconstruction (legacy) | ~1.2B | 2025.10 | [Download](https://huggingface.co/tencent/HunyuanWorld-Mirror/tree/main) |
 
 ### Panorama Generation — HY-Pano Series
 
 | Model | Description | Params | Date | Hugging Face |
 |-------|-------------|--------|------|--------------|
-| HY-Pano-2 [new] | Text / image → 360° panorama | ~80B | 2026 | [Download](https://huggingface.co/tencent/HY-World-2.0/tree/main/HY-Pano-2.0) |
-| HY-Pano-2-Qwen [new] | Text / image → 360° panorama | ~425M | 2026 | [Download](https://huggingface.co/tencent/HY-World-2.0/blob/main/HY-Pano-2.0/pytorch_lora_weights.safetensors) |
+| HY-Pano-2 [new] | Text / image &rarr; 360° panorama | — | Coming Soon | — |
 
 ### World Expansion — WorldStereo Series
 
 | Model           | Description | Params | Date | Hugging Face |
 |-----------------|-------------|-----|------|--------------|
-| WorldStereo-2 [new] | Panorama &rarr;  3DGS world |  ~17B  | 2026 | [Download](https://huggingface.co/hanshanxue/WorldStereo/tree/main) |
+| WorldStereo-2 [new] | Panorama &rarr;  3DGS world |  —  | Coming Soon | — |
+
+### Spatial Planning — WorldNav Series
+| Algorithm           | Description | Params | Date |
+|-----------------|-------------|-----|------|
+| WorldNav [new] | Panorama &rarr;  Camera Traj. |  —  | Coming Soon | 
 
 We recommend referring to our previous works, [WorldStereo](https://github.com/FuchengSu/WorldStereo) and [WorldMirror](https://github.com/Tencent-Hunyuan/HunyuanWorld-Mirror), for background knowledge on 3D world generation and reconstruction. 
 
@@ -160,100 +164,44 @@ We recommend referring to our previous works, [WorldStereo](https://github.com/F
 
 ### Install Requirements
 
-We recommend **CUDA 12.8** and **Python 3.11+**. The easiest path is to prepare one shared environment, first make **World Reconstruction (WorldMirror 2.0)** work, and then install the extra components required by **World Generation**.
-
-#### 1. Create the shared environment
+We recommend CUDA 12.4 for installation.
 
 ```bash
+# 1. Clone the repository
 git clone https://github.com/Tencent-Hunyuan/HY-World-2.0
 cd HY-World-2.0
 
-conda create -n hyworld2 python=3.11.15
+# 2. Create conda environment
+conda create -n hyworld2 python=3.10
 conda activate hyworld2
-```
 
-#### 2. Install World Reconstruction dependencies
+# 3. Install PyTorch (CUDA 12.4)
+pip install torch==2.4.0 torchvision==0.19.0 --index-url https://download.pytorch.org/whl/cu124
 
-After this step, the environment is ready for **worldrecon / WorldMirror 2.0**.
-
-```bash
-# Base dependencies shared by worldrecon and worldgen
+# 4. Install dependencies
 pip install -r requirements.txt
 
-# Recommended: install the custom gsplat variant once for both worldrecon and worldgen
-cd hyworld2/worldgen/third_party/gsplat_maskgaussian
-pip install -e . --no-build-isolation
-cd ../../../../
-```
-
-If you only need **worldrecon** and want a simpler fallback, official `gsplat` is also supported:
-
-```bash
-pip install git+https://github.com/nerfstudio-project/gsplat.git
-```
-
-Install **one** FlashAttention backend:
-
-```bash
-# Recommended for Hopper GPUs: FlashAttention-3
+# 5. Install FlashAttention
+# (Recommended) Install FlashAttention-3
 git clone https://github.com/Dao-AILab/flash-attention.git
 cd flash-attention/hopper
 python setup.py install
 cd ../../
 rm -rf flash-attention
-```
 
-```bash
-# Simpler alternative: FlashAttention-2
+# For simpler installation, you can also use FlashAttention-2
 pip install flash-attn --no-build-isolation
 ```
 
-#### 3. Add extra World Generation dependencies
-
-Run the following extra steps only if you need **worldgen**. These commands assume the shared `hyworld2` environment above is already active.
-
-```bash
-# Git-based dependencies require torch/CUDA to be installed first
-pip install --no-build-isolation -r requirements_git.txt
-
-# recastnavigation is managed as a git submodule
-git submodule update --init --recursive
-
-# Recast navmesh extension for trajectory planning
-cd hyworld2/worldgen/third_party/navmesh
-pip install . --no-build-isolation
-cd ../../../../
-```
-
-For **HY-Pano-2** installation, please refer to **[hyworld2/panogen/README.md](hyworld2/panogen/README.md)**.
-
 ### Code Usage — Panorama Generation (HY-Pano-2)
 
-For full documentation and CLI reference, see **[hyworld2/panogen/README.md](hyworld2/panogen/README.md)**.
-
-We provide a `diffusers`-like Python API for HY-Pano 2.0. Model weights are automatically downloaded from Hugging Face on first run.
-
-```python
-from pipeline import HunyuanPanoPipeline
-
-pipeline = HunyuanPanoPipeline.from_pretrained('tencent/HY-World-2.0')
-output = pipeline('input.png')
-output.save('output_panorama.png')
-```
+*Coming soon.*
 
 ### Code Usage — World Generation (WorldNav, WorldStereo-2, and 3DGS)
 
-The world Generation pipeline turns a panorama scene into a navigable 3D world through five stages:
+*Coming soon.*
 
-| Stage | Script | Description |
-|-------|--------|-------------|
-| 1. Trajectory Planning | `traj_generate.py` | VLM-guided camera trajectory planning with obstacle-aware navigation |
-| 2. Trajectory Rendering | `traj_render.py` | Multi-GPU point-cloud rendering along planned trajectories |
-| 3. World Expansion | `video_gen.py` | WorldStereo-2 keyframe generation with memory-guided consistency |
-| 4. GS Data Preparation | `gen_gs_data.py` | Extract frames, aligned depth, normals, and cameras for 3DGS training |
-| 5. 3DGS Training | `world_gs_trainer.py` | Optimize and export the final Gaussian Splatting world |
-
-For full documentation, prerequisites, and CLI arguments, see **[hyworld2/worldgen/README.md](hyworld2/worldgen/README.md)**.
+**We recommend referring to our previous work, [WorldStereo](https://github.com/FuchengSu/WorldStereo), for the open-source preview version of WorldStereo-2.**
 
 ### Code Usage — WorldMirror 2.0
 WorldMirror 2.0 supports the following usage modes:
@@ -508,8 +456,8 @@ If you find HunyuanWorld 2.0 useful for your research, please cite:
 ```bibtex
 @article{hyworld22026,
   title={HY-World 2.0: A Multi-Modal World Model for Reconstructing, Generating, and Simulating 3D Worlds},
-  author={Team HY-World},
-  journal={arXiv preprint arXiv:2604.14268},
+  author={Tencent HY-World Team},
+  journal={arXiv preprint},
   year={2026}
 }
 
@@ -520,6 +468,7 @@ If you find HunyuanWorld 2.0 useful for your research, please cite:
     journal={arXiv preprint}
 }
 ```
+
 
 ## 📧 Contact
 

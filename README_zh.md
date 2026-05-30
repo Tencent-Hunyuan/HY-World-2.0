@@ -12,8 +12,7 @@
   <a href=https://3d.hunyuan.tencent.com/sceneTo3D target="_blank"><img src=https://img.shields.io/badge/Official%20Site-333399.svg?logo=homepage height=22px></a>
   <a href=https://huggingface.co/tencent/HY-World-2.0 target="_blank"><img src=https://img.shields.io/badge/%F0%9F%A4%97%20Models-d96902.svg height=22px></a>
   <a href=https://3d-models.hunyuan.tencent.com/world/ target="_blank"><img src= https://img.shields.io/badge/Page-bb8a2e.svg?logo=github height=22px></a>
-  <a href=https://arxiv.org/abs/2604.14268 target="_blank"><img src=https://img.shields.io/badge/Report-b5212f.svg?logo=arxiv height=22px></a>
-   <a href=https://modelscope.cn/models/Tencent-Hunyuan/HY-World-2.0 target="_blank"><img src=https://img.shields.io/badge/ModelScope-Models-624aff.svg height=22px></a>
+  <a href=https://3d-models.hunyuan.tencent.com/world/world2_0/HY_World_2_0.pdf target="_blank"><img src=https://img.shields.io/badge/Report-b5212f.svg?logo=arxiv height=22px></a>
   <a href=https://discord.gg/dNBrdrGGMa target="_blank"><img src= https://img.shields.io/badge/Discord-white.svg?logo=discord height=22px></a>
   <a href=https://x.com/TencentHunyuan target="_blank"><img src=https://img.shields.io/badge/Tencent%20HY-black.svg?logo=x height=22px></a>
  <a href="#community-resources" target="_blank"><img src=https://img.shields.io/badge/Community-lavender.svg?logo=homeassistantcommunitystore height=22px></a>
@@ -30,10 +29,12 @@ https://github.com/user-attachments/assets/b56f4750-25c9-48fb-83ff-d58526711463
 
 ## 🔥 最新动态
 
-- **[2026年5月18日]**：🤗 开源世界生成推理代码和 WorldStereo 2.0 模型权重！
-- **[2026年5月11日]**：🤗 开源 HY-Pano 2.0 推理代码和模型权重！
 - **[2026年4月16日]**：🚀 发布 HY-World 2.0 技术报告及部分代码！
 - **[2026年4月16日]**：🤗 开源 WorldMirror 2.0 推理代码和模型权重！
+- **[即将发布]**：发布完整的 HY-World 2.0（World Generation）推理代码。
+- **[即将发布]**：发布 ![全景生成](https://img.shields.io/badge/Panorama_Generation-4285F4?style=flat-square)（HY-Pano 2.0）模型权重和代码。
+- **[即将发布]**：发布 ![轨迹规划](https://img.shields.io/badge/Trajectory_Planning-EA4335?style=flat-square)（WorldNav）代码。
+- **[即将发布]**：发布 ![世界扩展](https://img.shields.io/badge/World_Expansion-FBBC05?style=flat-square)（WorldStereo 2.0）模型权重和推理代码。
 
 
 ## 📋 目录
@@ -45,7 +46,6 @@ https://github.com/user-attachments/assets/b56f4750-25c9-48fb-83ff-d58526711463
 - [🤗 快速开始](#-快速开始)
 - [🔮 性能表现](#-性能表现)
 - [🎬 更多示例](#-更多示例)
-- [📖 文档](#-文档)
 - [📚 引用](#-引用)
 
 
@@ -56,7 +56,7 @@ https://github.com/user-attachments/assets/b56f4750-25c9-48fb-83ff-d58526711463
 - **世界生成**（文本 / 单张图像 &rarr; 3D 世界）：通过四阶段方法合成高保真、可导航的3D场景——a) ![全景生成](https://img.shields.io/badge/Panorama_Generation-4285F4?style=flat-square)（HY-Pano 2.0），b) ![轨迹规划](https://img.shields.io/badge/Trajectory_Planning-EA4335?style=flat-square)（WorldNav），c) ![世界扩展](https://img.shields.io/badge/World_Expansion-FBBC05?style=flat-square)（WorldStereo 2.0），d) ![世界组合](https://img.shields.io/badge/World_Composition-34A853?style=flat-square)（WorldMirror 2.0 + 3DGS 学习）。
 - **世界重建**（多视图图像 / 视频 &rarr; 3D）：由 WorldMirror 2.0 驱动，这是一个统一的前馈模型，能够在单次前向传播中同时预测深度、表面法线、相机参数、3D点云和3DGS属性。
 
-HY-World 2.0 是**开源的**3D世界模型。我们已经发布模型权重、代码和技术细节，以促进可复现性并推动该领域的研究进展。
+HY-World 2.0 是**开源的**3D世界模型，我们将发布所有模型权重、代码和技术细节，以促进可复现性和推动该领域的研究进展。
 
 ### 为什么需要3D世界模型？
 
@@ -125,11 +125,11 @@ HY-World 2.0 是**开源的**3D世界模型。我们已经发布模型权重、�
 
 ## 📝 开源计划
 
-- [x] 技术报告
-- [x] WorldMirror 2.0 代码和模型权重
-- [x] 世界生成推理代码（WorldNav + WorldStereo 2.0 + 3DGS 组合）
-- [x] 全景生成（HY-Pano 2.0）模型和代码
-- [x] WorldStereo 2.0 模型权重
+- ✅ 技术报告
+- ✅ WorldMirror 2.0 代码和模型权重
+- ⬜ 世界生成完整推理代码（WorldNav + World Composition）
+- ⬜ 全景生成（HY-Pano 2.0）模型和代码 — 可使用 [HunyuanWorld 1.0](https://github.com/Tencent-Hunyuan/HunyuanWorld-1.0)的全景图生成 作为临时替代
+- ⬜ 世界扩展（WorldStereo 2.0）模型和代码 — 可使用 [WorldStereo](https://github.com/FuchengSu/WorldStereo) 作为临时替代
 
 
 ## 🎁 模型库
@@ -138,21 +138,26 @@ HY-World 2.0 是**开源的**3D世界模型。我们已经发布模型权重、�
 
 | 模型 | 描述 | 参数量 | 日期 | Hugging Face |
 |------|------|--------|------|--------------|
-| WorldMirror-2 [new] | 多视图 / 视频 &rarr; 3D 重建 | ~1.2B | 2026 | [下载](https://huggingface.co/tencent/HY-World-2.0/tree/main/HY-WorldMirror-2.0) |
-| WorldMirror-1 | 多视图 / 视频 &rarr; 3D 重建（旧版） | ~1.2B | 2025 | [下载](https://huggingface.co/tencent/HunyuanWorld-Mirror/tree/main) |
+| WorldMirror-2 [new] | 多视图 / 视频 &rarr; 3D 重建 | ~1.2B | 2026.4 | [下载](https://huggingface.co/tencent/HY-World-2.0/HY-WorldMirror-2.0) |
+| WorldMirror-1 | 多视图 / 视频 &rarr; 3D 重建（旧版） | ~1.2B | 2025.10 | [下载](https://huggingface.co/tencent/HunyuanWorld-Mirror/tree/main) |
 
-### 全景生成 — HY-Pano 系列
+### 全景生成 — HY_Pano 系列
 
 | 模型 | 描述 | 参数量 | 日期 | Hugging Face |
 |------|------|--------|------|--------------|
-| HY-Pano-2 [new] | 文本 / 图像 &rarr; 360° 全景 | ~80B | 2026 | [下载](https://huggingface.co/tencent/HY-World-2.0/tree/main/HY-Pano-2.0) |
-| HY-Pano-2-Qwen [new] | 文本 / 图像 &rarr; 360° 全景 | ~425M | 2026 | [下载](https://huggingface.co/tencent/HY-World-2.0/blob/main/HY-Pano-2.0/pytorch_lora_weights.safetensors) |
+| HY-Pano-2 [new] | 文本 / 图像 &rarr; 360° 全景 | — | 即将发布 | — |
 
-### 世界扩展 — WorldStereo 系列
+### 世界生成 - WorldStereo 系列
 
 | 模型            | 描述 | 参数量 | 日期 | Hugging Face |
 |-----------------|------|--------|------|--------------|
-| WorldStereo-2 [new] | 全景 &rarr; 3DGS 世界 | ~17B | 2026 | [下载](https://huggingface.co/hanshanxue/WorldStereo/tree/main) |
+| WorldStereo-2 [new] | 全景 &rarr; 完整 3DGS 世界 | — | 即将发布 | — |
+
+### 空间规划 - WorldNav系列
+
+| 算法            | 描述 | 参数量 | 日期 |  
+|-----------------|------|--------|------| 
+| WorldNav [new] | 全景 &rarr; 完整 3DGS 世界 | — | 即将发布 |  
 
 
 我们建议参考我们之前的工作 [WorldStereo](https://github.com/FuchengSu/WorldStereo) 和 [WorldMirror](https://github.com/Tencent-Hunyuan/HunyuanWorld-Mirror)，以了解3D世界生成和重建的背景知识。
@@ -161,100 +166,44 @@ HY-World 2.0 是**开源的**3D世界模型。我们已经发布模型权重、�
 
 ### 安装依赖
 
-我们建议使用 **CUDA 12.8** 和 **Python 3.11+**。推荐先准备一个共享环境，先满足 **世界重建（WorldMirror 2.0）** 的运行需求，再按需安装 **世界生成** 的额外组件。
-
-#### 1. 创建共享环境
+我们建议使用 CUDA 12.4 进行安装。
 
 ```bash
+# 1. 克隆仓库
 git clone https://github.com/Tencent-Hunyuan/HY-World-2.0
 cd HY-World-2.0
 
-conda create -n hyworld2 python=3.11.15
+# 2. 创建 conda 环境
+conda create -n hyworld2 python=3.10
 conda activate hyworld2
-```
 
-#### 2. 安装世界重建依赖
+# 3. 安装 PyTorch（CUDA 12.4）
+pip install torch==2.4.0 torchvision==0.19.0 --index-url https://download.pytorch.org/whl/cu124
 
-完成此步骤后，环境即可运行 **worldrecon / WorldMirror 2.0**。
-
-```bash
-# worldrecon 和 worldgen 共用的基础依赖
+# 4. 安装依赖
 pip install -r requirements.txt
 
-# 推荐：安装一次自定义 gsplat 版本，同时支持 worldrecon 和 worldgen
-cd hyworld2/worldgen/third_party/gsplat_maskgaussian
-pip install -e . --no-build-isolation
-cd ../../../../
-```
-
-如果你只需要 **worldrecon**，并希望使用更简单的妥协安装方式，也可以安装官方 `gsplat`：
-
-```bash
-pip install git+https://github.com/nerfstudio-project/gsplat.git
-```
-
-安装 **一种** FlashAttention 后端：
-
-```bash
-# Hopper GPU 推荐：FlashAttention-3
+# 5. 安装 FlashAttention
+# （推荐）安装 FlashAttention-3
 git clone https://github.com/Dao-AILab/flash-attention.git
 cd flash-attention/hopper
 python setup.py install
 cd ../../
 rm -rf flash-attention
-```
 
-```bash
-# 更简单的替代方案：FlashAttention-2
+# 也可以使用更简单的 FlashAttention-2 安装方式
 pip install flash-attn --no-build-isolation
 ```
 
-#### 3. 添加世界生成额外依赖
-
-如果需要运行 **worldgen**，请继续执行以下步骤。以下命令假设已经激活上面的 `hyworld2` 环境。
-
-```bash
-# git 依赖需要先安装好 torch/CUDA
-pip install --no-build-isolation -r requirements_git.txt
-
-# recastnavigation 通过 git submodule 管理
-git submodule update --init --recursive
-
-# 用于轨迹规划的 Recast navmesh 扩展
-cd hyworld2/worldgen/third_party/navmesh
-pip install . --no-build-isolation
-cd ../../../../
-```
-
-**HY-Pano-2** 的安装请参阅 **[hyworld2/panogen/README_zh_CN.md](hyworld2/panogen/README_zh_CN.md)**。
-
 ### 代码使用 — 全景生成（HY-Pano-2）
 
-完整文档和命令行参考，请参阅 **[hyworld2/panogen/README_zh_CN.md](hyworld2/panogen/README_zh_CN.md)**。
-
-我们为 HY-Pano 2.0 提供类似 `diffusers` 的 Python API。模型权重将在首次运行时自动从 Hugging Face 下载。
-
-```python
-from pipeline import HunyuanPanoPipeline
-
-pipeline = HunyuanPanoPipeline.from_pretrained('tencent/HY-World-2.0')
-output = pipeline('input.png')
-output.save('output_panorama.png')
-```
+*即将发布。*
 
 ### 代码使用 — 世界生成（WorldNav、WorldStereo-2 和 3DGS）
 
-世界生成流程会将全景场景转换为可导航的 3D 世界，主要包含五个阶段：
+*即将发布。*
 
-| 阶段 | 脚本 | 说明 |
-|------|------|------|
-| 1. 轨迹规划 | `traj_generate.py` | 基于 VLM 的相机轨迹规划，支持障碍物感知导航 |
-| 2. 轨迹渲染 | `traj_render.py` | 沿规划轨迹进行多卡点云渲染 |
-| 3. 世界扩展 | `video_gen.py` | 使用 WorldStereo-2 进行带记忆一致性的关键帧生成 |
-| 4. GS 数据准备 | `gen_gs_data.py` | 提取用于 3DGS 训练的图像、对齐深度、法线和相机参数 |
-| 5. 3DGS 训练 | `world_gs_trainer.py` | 优化并导出最终的 Gaussian Splatting 世界 |
-
-完整文档、运行前置条件和命令行参数，请参阅 **[hyworld2/worldgen/README.md](hyworld2/worldgen/README.md)**。
+**我们建议参考之前的工作 [WorldStereo](https://github.com/FuchengSu/WorldStereo)，作为 WorldStereo-2 的开源预览版本。**
 
 ### 代码使用 — WorldMirror 2.0
 WorldMirror 2.0 支持以下使用方式：
@@ -510,8 +459,8 @@ torchrun --nproc_per_node=2 -m hyworld2.worldrecon.gradio_app \
 ```bibtex
 @article{hyworld22026,
   title={HY-World 2.0: A Multi-Modal World Model for Reconstructing, Generating, and Simulating 3D Worlds},
-  author={Team HY-World},
-  journal={arXiv preprint arXiv:2604.14268},
+  author={Tencent HY-World Team},
+  journal={arXiv preprint},
   year={2026}
 }
 
