@@ -28,7 +28,7 @@
 https://github.com/user-attachments/assets/b56f4750-25c9-48fb-83ff-d58526711463
 
 ## 🔥 News
-
+- **[July, 2026]**: 🤗 Update HY World 2.1! Try [our product](https://3d.hunyuan.tencent.com/sceneTo3D). 
 - **[May 18, 2026]**: 🤗 Open-source World Generation inference code and WorldStereo 2.0 model weights!
 - **[May 11, 2026]**: 🤗 Open-source HY-Pano 2.0 inference code and model weights!
 - **[April 16, 2026]**: 🚀 Release HY-World 2.0 technical report & partial codes!
