@@ -506,18 +506,20 @@ For detailed usage guides, parameter references, output format specifications, a
 If you find HunyuanWorld 2.0 useful for your research, please cite:
 
 ```bibtex
-@article{hyworld22026,
+@article{hyworld2026,
   title={HY-World 2.0: A Multi-Modal World Model for Reconstructing, Generating, and Simulating 3D Worlds},
-  author={Team HY-World},
+  author={{Team HY-World}},
   journal={arXiv preprint arXiv:2604.14268},
-  year={2026}
+  year={2026},
+  doi={10.48550/arXiv.2604.14268},
+  url={https://arxiv.org/abs/2604.14268}
 }
 
 @article{hunyuanworld2025tencent,
     title={HunyuanWorld 1.0: Generating Immersive, Explorable, and Interactive 3D Worlds from Words or Pixels},
-    author={Team HunyuanWorld},
+    author={{Team HunyuanWorld}},
     year={2025},
-    journal={arXiv preprint}
+    journal={arXiv preprint arXiv:2507.21809}
 }
 ```
 
