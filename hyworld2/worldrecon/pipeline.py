@@ -1,6 +1,29 @@
 """
 HunyuanWorld-Mirror Inference Pipeline
 
+Recommended Configuration for HY-World-2.0:
+    Hardware Requirements:
+        - GPU: NVIDIA GPU with 24GB+ VRAM (e.g., RTX 3090/4090, A10/A100)
+        - Multi-GPU: 2-8 GPUs with NVLink recommended for best performance
+        - CPU: 32GB+ RAM recommended
+        - Storage: 100GB+ free space for model weights and outputs
+
+    Software Requirements:
+        - Python: 3.12 or higher
+        - CUDA: 12.1 or higher
+        - PyTorch: 2.4+ with FSDP and bfloat16 support
+        - OS: Linux (Ubuntu 20.04+) recommended
+
+    Model Configuration:
+        - Base Model: tencent/HY-World-2.0
+        - Precision: bfloat16 (enable_bf16=True)
+        - Multi-GPU: FSDP with sharding strategy (use_fsdp=True)
+
+    Memory Optimization Options:
+        - Single GPU: Default settings for 24GB+ VRAM
+        - Multi-GPU: use_fsdp=True, enable_bf16=True, fsdp_cpu_offload=True
+        - Low VRAM: Reduce input image resolution or batch size
+
 Usage:
     # Python API — Single GPU
     from hyworld2.worldrecon.pipeline import WorldMirrorPipeline

@@ -1,6 +1,29 @@
 """
 Gradio demo for WorldMirror 2.0 — HunyuanWorld World Reconstruction.
 
+Recommended Configuration for HY-World-2.0 World Reconstruction:
+    Hardware Requirements:
+        - GPU: NVIDIA GPU with 24GB+ VRAM (e.g., RTX 3090/4090, A10/A100)
+        - Multi-GPU: 2-8 GPUs recommended for faster processing
+        - CPU: 32GB+ RAM recommended
+        - Storage: 100GB+ free space for model weights and 3D outputs
+
+    Software Requirements:
+        - Python: 3.12 or higher
+        - CUDA: 12.1 or higher
+        - PyTorch: 2.4+ with FSDP support
+        - OS: Linux (Ubuntu 20.04+) recommended
+
+    Model Configuration:
+        - Base Model: tencent/HY-World-2.0
+        - Precision: bfloat16 (enable_bf16=True for memory efficiency)
+        - Multi-GPU: Use FSDP (use_fsdp=True) for distributed inference
+
+    Memory Optimization:
+        - Single GPU (24GB): Process up to 50 images at 952px target size
+        - Single GPU (16GB): Reduce target size to 768px or fewer images
+        - Multi-GPU: Enable FSDP with CPU offload for large image sets
+
 Usage:
     python -m hyworld2.worldrecon.gradio_app
     python -m hyworld2.worldrecon.gradio_app --examples_dir /path/to/examples --port 8081

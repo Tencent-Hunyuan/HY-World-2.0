@@ -1,6 +1,29 @@
 """
 HunyuanImage-3.0 Panorama Pipeline (Qwen-Image-Edit backend)
 
+Recommended Configuration for HY-World-2.0:
+    Hardware Requirements:
+        - GPU: NVIDIA GPU with 24GB+ VRAM (e.g., RTX 3090/4090, A10/A100)
+        - For multi-GPU: Use FSDP with 2+ GPUs for memory efficiency
+        - CPU: 16GB+ RAM recommended
+        - Storage: 50GB+ free space for model weights and outputs
+
+    Software Requirements:
+        - Python: 3.12 or higher
+        - CUDA: 12.1 or higher
+        - PyTorch: 2.4+ with bfloat16 support
+        - OS: Linux (Ubuntu 20.04+) or Windows with WSL2
+
+    Model Configuration:
+        - Base Model: Qwen/Qwen-Image-Edit-2509
+        - LoRA: tencent/HY-World-2.0 (subfolder: HY-Pano-2.0)
+        - Precision: bfloat16 (recommended for memory efficiency)
+
+    Memory Optimization:
+        - Single GPU (24GB): Use default settings, may need to reduce height/width
+        - Single GPU (16GB): Reduce output resolution (height=768, width=1536)
+        - Multi-GPU: Enable FSDP with CPU offload for larger batches
+
 Usage:
     # Python API — download from HuggingFace
     from pipeline_with_qwen_image import HunyuanPanoPipeline
