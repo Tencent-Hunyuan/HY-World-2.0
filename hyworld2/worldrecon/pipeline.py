@@ -548,6 +548,21 @@ class WorldMirrorPipeline:
                 if hasattr(inner_model, 'gs_renderer'):
                     t0_render = time.perf_counter()
                     try:
+                        # Rendering upcasts every splat tensor to fp32 -- for a
+                        # 32-frame 630x952 scene that is 19.2 M gaussians, and
+                        # the spherical harmonics alone are 2.8 GiB. The save
+                        # stage above has already written depth, normals,
+                        # points and the Gaussian ply, and nothing below reads
+                        # predictions again, so drop everything rendering does
+                        # not need before asking for that room. Without this the
+                        # upcast fails with "CUDA out of memory. Tried to
+                        # allocate 2.79 GiB" on a 31.9 GiB card, and the case
+                        # finishes without its video.
+                        _render_keep = ("splats", "camera_poses", "camera_intrs")
+                        for _k in [k for k in predictions if k not in _render_keep]:
+                            predictions.pop(_k, None)
+                        gc.collect()
+                        torch.cuda.empty_cache()
                         splats_f32 = {k: v.float() if isinstance(v, torch.Tensor) else v
                                       for k, v in predictions["splats"].items()}
                         render_interpolated_video(

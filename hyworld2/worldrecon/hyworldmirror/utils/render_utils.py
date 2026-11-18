@@ -8,6 +8,7 @@ renders each frame via gsplat, and saves MP4 videos.
 from pathlib import Path
 
 import numpy as np
+import os
 import torch
 from tqdm import tqdm
 
@@ -219,7 +220,15 @@ def render_interpolated_video(gs_renderer: GaussianSplatRenderer,
         all_ext, all_int = build_wobble_traj(interp_per_pair * 12, splats["means"][0].median(dim=0).values.norm(dim=-1)[None])
 
     rendered_rgbs, rendered_depths = [], []
-    chunk = 40
+    # Cameras per rasterisation call. The projection buffers inside
+    # rasterize_batches are one element per gaussian per camera, so a fixed 40
+    # scales with the scene: 32 frames of 630x952 give 19.2 M gaussians, i.e.
+    # 2.9 GiB per buffer, and rendering dies with "CUDA out of memory. Tried to
+    # allocate 2.79 GiB" on a 31.9 GiB card. Hold that product to a budget
+    # instead; small scenes keep the original 40.
+    _n_gauss = int(splats["means"].shape[-2])
+    _budget = int(os.environ.get("HYWORLD_RENDER_BUDGET_ELEMS", 2 * 10**8))
+    chunk = max(1, min(40, _budget // max(_n_gauss, 1)))
 
     # Always prune splats to remove scale outliers
     try:
@@ -236,9 +245,14 @@ def render_interpolated_video(gs_renderer: GaussianSplatRenderer,
             all_ext[:, st:ed].to(torch.float32), all_int[:, st:ed].to(torch.float32),
             width=w, height=h, sh_degree=gs_renderer.sh_degree if "sh" in pruned_splats else None,
         )
-        rendered_rgbs.append(colors)
+        # Keep only the chunk being rasterised on the GPU. The frames are
+        # needed on the host anyway (_make_video copies them), and an
+        # interpolated trajectory is interp_per_pair x the input frames: 465
+        # frames of 630x952 fp32 is 3.3 GiB, which does not fit beside the
+        # reconstruction's own tensors on a 31.9 GiB card.
+        rendered_rgbs.append(colors.cpu())
         if render_depth:
-            rendered_depths.append(depths)
+            rendered_depths.append(depths.cpu())
 
     rgbs = torch.cat(rendered_rgbs, dim=1)[0]  # [N, H, W, 3]
     if render_depth:
